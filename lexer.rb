@@ -5,7 +5,7 @@
 #++
 
 require 'racc/parser'
-# Compile: rex tokens.rex -o lexer.rb
+# Compile with: rex tokens.rex -o lexer.rb
 
 class Lexer < Racc::Parser
   require 'strscan'
@@ -69,7 +69,7 @@ class Lexer < Racc::Parser
          action { [:NUMBER, text.to_i] }
 
       when (text = @ss.scan(/\"[^"]*\"/))
-         action { [:STRING, text[1..-2]] }  #strip enclosing quotes
+         action { [:STRING, text[1..-2]] } # 'hi'
 
       when (text = @ss.scan(/\n+/))
          action { [:NEWLINE, text] }
@@ -89,6 +89,9 @@ class Lexer < Racc::Parser
       when (text = @ss.scan(/else/))
          action { [:ELSE, text] }
 
+      when (text = @ss.scan(/while/))
+         action { [:WHILE, text] }
+
       when (text = @ss.scan(/true/))
          action { [:TRUE, text] }
 
@@ -99,10 +102,10 @@ class Lexer < Racc::Parser
          action { [:NIL, text] }
 
       when (text = @ss.scan(/[a-z]\w*/))
-         action { [:IDENTIFIER, text] }
+         action { [:IDENTIFIER, text] } # variable_name, method_name
 
       when (text = @ss.scan(/[A-Z]\w*/))
-         action { [:CONSTANT, text] }
+         action { [:CONSTANT, text] } # Constant
 
       when (text = @ss.scan(/&&/))
          action { [text, text] }
@@ -123,7 +126,7 @@ class Lexer < Racc::Parser
          action { [text, text] }
 
       when (text = @ss.scan(/./))
-         action { [text, text] }
+         action { [text, text] }  # +, -, *, ., (, )
 
       else
         text = @ss.string[@ss.pos .. -1]

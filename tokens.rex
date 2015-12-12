@@ -1,62 +1,48 @@
-# Compile: rex tokens.rex -o lexer.rb
+# Compile with: rex tokens.rex -o lexer.rb
 
 class Lexer
 
 macro
-  BLANK       [\ \t]+
+  BLANK         [\ \t]+
 
 rule
-  {BLANK}     #skip whitespace
-  \#.*$       #skip comments
+  # Whitespace
+  {BLANK}       # no action
+  \#.*$         # no action
+
+  \d+           { [:NUMBER, text.to_i] }
+  \"[^"]*\"     { [:STRING, text[1..-2]] } # 'hi'
+  \n+           { [:NEWLINE, text] }
   
-  \d+         { [:NUMBER, text.to_i] }
-  \"[^"]*\"   { [:STRING, text[1..-2]] }  #strip enclosing quotes
-  \n+         { [:NEWLINE, text] }
-  
-  #
-  #   keywords
-  #
-  
+  # Keywords
   end           { [:END, text] }
-  def           { [:DEF, text] } 
-  class         { [:CLASS, text] } 
+  def           { [:DEF, text] }
+  class         { [:CLASS, text] }
   if            { [:IF, text] }
   else          { [:ELSE, text] }
+  while         { [:WHILE, text] }
+
+  # Literals
+  true          { [:TRUE, text] }
+  false         { [:FALSE, text] }
+  nil           { [:NIL, text] }
+
+  # Identifiers
+  [a-z]\w*      { [:IDENTIFIER, text] } # variable_name, method_name
+  [A-Z]\w*      { [:CONSTANT, text] } # Constant
+
+  # Long operators
+  &&            { [text, text] }
+  \|\|          { [text, text] }
+  ==            { [text, text] }
+  !=            { [text, text] }
+  <=            { [text, text] }
+  >=            { [text, text] }
+
+  # Catch all
+  .             { [text, text] }  # +, -, *, ., (, )
   
-  #
-  #   literals
-  #
-  
-  true         { [:TRUE, text] }
-  false        { [:FALSE, text] }
-  nil          { [:NIL, text] }
-  
-  #
-  #   Identifiers
-  #
-  
-  [a-z]\w*    { [:IDENTIFIER, text] }
-  [A-Z]\w*    { [:CONSTANT, text] }
-  
-  #
-  #   long operators
-  #
-  
-  &&          { [text, text] }
-  \|\|        { [text, text] }
-  ==          { [text, text] }
-  !=          { [text, text] }
-  <=          { [text, text] }
-  >=          { [text, text] }
-  
-  
-  #
-  #   all (operators)
-  #     + - ( ) . *
-  #
-  
-  .           { [text, text] }
-  
+
 inner
   def run(code)
     scan_setup(code)
@@ -66,4 +52,5 @@ inner
     end
     tokens
   end
+  
 end

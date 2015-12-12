@@ -48,7 +48,7 @@ end
 #   reciever.method
 #   reciever.method( arg1, arg2 )
 #
-class CallNode < Struct.new(:reciever_node, :method, :argument_nodes); end
+class CallNode < Struct.new(:receiver_node, :method, :argument_nodes); end
 
 # Get/Setting the value of a local variable
 class SetLocalNode < Struct.new(:name, :value_node); end
@@ -68,3 +68,4 @@ class ClassNode < Struct.new(:name, :body_node); end
 #
 
 class IfNode < Struct.new(:condition_node, :body_node, :else_body_node); end
+class WhileNode  < Struct.new(:condition_node, :body_node); end
