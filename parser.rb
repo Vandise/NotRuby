@@ -12,7 +12,7 @@ require 'racc/parser.rb'
 class Parser < Racc::Parser
 
 module_eval(<<'...end grammar.yacc/module_eval...', 'grammar.yacc', 175)
-  def parse(code, show_tokens=false)
+  def parse(code, show_tokens=true)
     @tokens = Lexer.new.run(code)
     p @tokens if show_tokens
     do_parse
